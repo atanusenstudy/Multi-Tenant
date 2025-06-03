@@ -1,4 +1,6 @@
 
+using Infrastructure;
+
 namespace WebAPI
 {
     public class Program
@@ -14,6 +16,10 @@ namespace WebAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            #region Dependency Injection
+            builder.Services.AddInfrastructureServices(builder.Configuration); // Registering Infrastructure Layer Services
+
+            #endregion
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -27,6 +33,10 @@ namespace WebAPI
 
             app.UseAuthorization();
 
+            #region Middleware
+            app.UseInfrastructure(); // Using Infrastructure Layer Middleware
+
+            #endregion
 
             app.MapControllers();
 
