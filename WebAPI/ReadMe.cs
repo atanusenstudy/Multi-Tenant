@@ -3,7 +3,8 @@ public class ReadMe
 {
     //This class serves as a placeholder for documentation or metadata about the WebAPI project.
     #region Common
-    /*
+    /* This Project is a subscription based multi-tenant WebAPI project.
+     * 
      * Clean Layered Architecture: This Project references to infrastructure which references to Application and which references to Domain.
      * 
      */
@@ -30,11 +31,6 @@ public class ReadMe
     #region application
     /*
      *  House CQRS Implementations, Application Services, DTOs, Mappings, and MediatR Handlers. 
-     * 
-     */
-    #endregion
-    #region common
-    /*
      * 
      */
     #endregion
