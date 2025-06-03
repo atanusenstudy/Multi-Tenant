@@ -1,4 +1,5 @@
 ﻿using Finbuckle.MultiTenant;
+using Infrastructure.Contexts;
 using Infrastructure.Tenancy;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +31,9 @@ namespace Infrastructure
                     .WithHeaderStrategy(TenancyConstants.TenantIdName) // Tenant Header: When the user logged in first time, we expect them to specify tenant in header
                     .WithClaimStrategy(TenancyConstants.TenantIdName) // Tenant Claim: When the user logged in, we expect them to have a claim Key:  "tenant" which will be used to identify tenant
                     .WithEFCoreStore<TenantDbContext, ABCSchoolTeanantInfo>() // 
-                    .Services;
+                    .Services
+                .AddDbContext<ApplicationDbContext>(options => options
+                .UseSqlServer(config.GetConnectionString("DefaultConnection")));
         }
 
         /// <summary>

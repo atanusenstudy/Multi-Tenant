@@ -19,6 +19,7 @@ public class ReadMe
     /*
      * Housing the External Dependencies , Database Context, Repositories, and Migrations.
      * What Db are we using etc
+     * Identity: It is there in our project but we are extending it according to our use so we will inherit it.
      */
     #endregion
 
