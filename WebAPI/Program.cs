@@ -5,7 +5,7 @@ namespace WebAPI
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -19,8 +19,12 @@ namespace WebAPI
             #region Dependency Injection
             builder.Services.AddInfrastructureServices(builder.Configuration); // Registering Infrastructure Layer Services
 
+            
             #endregion
             var app = builder.Build();
+
+            //Database Seeder
+            await app.Services.AddDatabaseInitializerAsync();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

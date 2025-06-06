@@ -1,7 +1,9 @@
 ﻿using Finbuckle.MultiTenant;
 using Infrastructure.Contexts;
+using Infrastructure.Identity.Models;
 using Infrastructure.Tenancy;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,8 +34,42 @@ namespace Infrastructure
                     .WithClaimStrategy(TenancyConstants.TenantIdName) // Tenant Claim: When the user logged in, we expect them to have a claim Key:  "tenant" which will be used to identify tenant
                     .WithEFCoreStore<TenantDbContext, ABCSchoolTeanantInfo>() // 
                     .Services
-                .AddDbContext<ApplicationDbContext>(options => options
-                .UseSqlServer(config.GetConnectionString("DefaultConnection")));
+                .AddDbContext<ApplicationDbContext>(options => options //Add Db context if client do not have his DB
+                .UseSqlServer(config.GetConnectionString("DefaultConnection")))
+                .AddTransient<ITenantDbSeeder, TenantDbSeeder>()
+                .AddTransient<ApplicationDbSeeder>()
+                .AddIdentityService();
+        }
+
+        public static async Task AddDatabaseInitializerAsync(this IServiceProvider servicesProvider, CancellationToken cancellationToken = default)
+        {
+            // This method is used to initialize the database with the tenant information and application data
+            using var scope = servicesProvider.CreateScope();
+            
+            await scope.ServiceProvider
+                .GetRequiredService<ITenantDbSeeder>()
+                .InitializeDatabaseAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Add Identity services here
+        /// For example, you can add Identity, JWT authentication, etc.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        internal static IServiceCollection AddIdentityService(this IServiceCollection services)
+        {
+            return services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+            {
+                options.Password.RequiredLength = 8;
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.User.RequireUniqueEmail = true; // Ensure unique email addresses
+            }).AddEntityFrameworkStores<ApplicationDbContext>()
+              .AddDefaultTokenProviders()
+              .Services;
         }
 
         /// <summary>
